@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fit Cultural · Yandeh</title>
+<style>
+  :root{
+    --bg:#08080b;
+    --bg-soft:#101016;
+    --card:#15151c;
+    --line:#26262f;
+    --line-soft:#1d1d25;
+    --txt:#f5f5f7;
+    --txt-dim:#9c9ca8;
+    --txt-faint:#5e5e6a;
+    --y1:#ff2d8e;
+    --y2:#ff6a3d;
+    --focus:#ff4d79;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(80% 60% at 80% 0%, #16101a 0%, transparent 60%),
+      var(--bg);
+    color:var(--txt);
+    font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100%;
+    display:flex;align-items:center;justify-content:center;
+    padding:32px 22px;
+  }
+  .stage{width:100%;max-width:680px}
+
+  /* mark */
+  .mark{display:flex;align-items:center;gap:10px;margin-bottom:auto}
+  .mark svg{width:26px;height:26px}
+  .mark span{font-weight:700;letter-spacing:.14em;font-size:12px;color:var(--txt-dim);text-transform:uppercase}
+
+  .grad{
+    background:linear-gradient(100deg,var(--y1),var(--y2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  /* screens */
+  .screen{display:none;animation:fade .45s ease both}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* intro */
+  .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--txt-faint);font-weight:600;margin-bottom:18px}
+  .intro h1{font-size:38px;font-weight:800;letter-spacing:-.025em;line-height:1.1}
+  .intro p{color:var(--txt-dim);font-size:16px;margin-top:16px;max-width:520px}
+  .ask{font-size:13px;letter-spacing:.04em;color:var(--txt-faint);text-transform:uppercase;font-weight:600;margin:40px 0 16px}
+  .modes{display:flex;flex-direction:column;gap:12px}
+  .mode{
+    background:var(--card);border:1px solid var(--line);color:var(--txt);
+    text-align:left;padding:20px 22px;border-radius:14px;cursor:pointer;
+    font-size:17px;font-weight:600;font-family:inherit;
+    display:flex;align-items:center;justify-content:space-between;
+    transition:border-color .2s, transform .12s, background .2s;
+  }
+  .mode .sub{display:block;font-size:12.5px;font-weight:400;color:var(--txt-faint);margin-top:4px}
+  .mode .arrow{color:var(--txt-faint);font-size:20px;transition:transform .2s,color .2s}
+  .mode:hover{border-color:#3a3a47;background:#181820;transform:translateY(-1px)}
+  .mode:hover .arrow{transform:translateX(4px);color:var(--y1)}
+  .mode:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+  /* name screen */
+  .namebox h2{font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .namebox p{color:var(--txt-dim);margin-top:10px;font-size:15px}
+  .field{margin-top:26px}
+  .field input{
+    width:100%;background:var(--bg-soft);border:1px solid var(--line);
+    color:var(--txt);font-size:18px;padding:16px 18px;border-radius:12px;font-family:inherit;
+  }
+  .field input:focus{outline:none;border-color:var(--focus)}
+
+  /* question */
+  .progress{height:3px;background:var(--line-soft);border-radius:99px;overflow:hidden;margin-bottom:36px}
+  .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--y1),var(--y2));transition:width .35s ease}
+  .qcount{font-size:12px;letter-spacing:.1em;color:var(--txt-faint);text-transform:uppercase;font-weight:600;margin-bottom:16px}
+  .qtext{font-size:27px;font-weight:700;letter-spacing:-.015em;line-height:1.28;min-height:108px}
+  .scale{display:flex;flex-direction:column;gap:10px;margin-top:34px}
+  .opt{
+    background:var(--card);border:1px solid var(--line);color:var(--txt);
+    text-align:left;padding:16px 20px;border-radius:12px;cursor:pointer;
+    font-size:15.5px;font-family:inherit;font-weight:500;
+    display:flex;align-items:center;gap:14px;
+    transition:border-color .15s,background .15s,transform .1s;
+  }
+  .opt .num{
+    width:26px;height:26px;flex:none;border-radius:7px;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--txt-faint);font-weight:700;
+    transition:all .15s;
+  }
+  .opt:hover{border-color:#3a3a47;background:#181820;transform:translateX(3px)}
+  .opt:hover .num{border-color:var(--y1);color:var(--y1)}
+  .opt:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:30px}
+  .back{background:none;border:none;color:var(--txt-faint);font-size:14px;cursor:pointer;font-family:inherit;padding:8px 0}
+  .back:hover{color:var(--txt-dim)}
+  .back[disabled]{opacity:0;pointer-events:none}
+
+  /* done + sending */
+  .done,.sending{text-align:center;padding:30px 0}
+  .done h2{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-top:18px}
+  .done p{color:var(--txt-dim);margin-top:12px;font-size:16px}
+  .check{width:64px;height:64px;margin:0 auto;border-radius:50%;
+    background:linear-gradient(120deg,var(--y1),var(--y2));
+    display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;font-weight:700}
+  .sending .spinner{width:42px;height:42px;border:3px solid var(--line);border-top-color:var(--y1);border-radius:50%;margin:0 auto;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .sending p{color:var(--txt-dim);margin-top:20px}
+  .errmsg{color:#ff7a7a;margin-top:18px;font-size:14px}
+  .retry{margin-top:18px;background:var(--card);border:1px solid var(--line);color:var(--txt);padding:12px 22px;border-radius:10px;cursor:pointer;font-family:inherit;font-size:15px}
+
+  @media(max-width:560px){
+    .intro h1{font-size:30px}
+    .qtext{font-size:22px;min-height:90px}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <div class="mark">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ff2d8e"/><stop offset="1" stop-color="#ff6a3d"/>
+      </linearGradient></defs>
+      <rect x="18" y="3" width="4" height="13" rx="2" fill="url(#g)"/>
+      <rect x="5"  y="24" width="4" height="13" rx="2" transform="rotate(-60 7 30)" fill="url(#g)"/>
+      <rect x="31" y="24" width="4" height="13" rx="2" transform="rotate(60 33 30)" fill="url(#g)"/>
+    </svg>
+    <span>Yandeh · Fit Cultural</span>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen active intro" id="screen-intro">
+    <div class="eyebrow">Cultura Yandeh</div>
+    <h1>Venha fazer parte<br>do nosso <span class="grad">time!</span></h1>
+    <p>São 18 afirmações rápidas sobre o seu jeito de trabalhar. Não há resposta certa ou errada — responda do jeito mais sincero possível. Leva cerca de 4 minutos.</p>
+    <div class="ask">Em qual modalidade você vai responder?</div>
+    <div class="modes">
+      <button class="mode" onclick="escolher('Candidato')">
+        <span>Pessoa Candidata<span class="sub">você está se candidatando a uma vaga</span></span>
+        <span class="arrow">→</span>
+      </button>
+      <button class="mode" onclick="escolher('Yandeco')">
+        <span>Yandeco<span class="sub">você já faz parte do time — resposta anônima</span></span>
+        <span class="arrow">→</span>
+      </button>
+      <button class="mode" onclick="escolher('Liderança')">
+        <span>Liderança<span class="sub">você lidera um time na Yandeh — resposta anônima</span></span>
+        <span class="arrow">→</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- NAME (candidato só) -->
+  <section class="screen namebox" id="screen-name">
+    <h2>Como podemos te chamar?</h2>
+    <p>Seu nome aparece só para o time de Pessoas & Cultura analisar o seu resultado.</p>
+    <div class="field">
+      <input id="nome" type="text" placeholder="Nome completo" autocomplete="name">
+    </div>
+    <div class="nav">
+      <button class="back" onclick="voltarIntro()">← voltar</button>
+      <button class="mode" style="width:auto;padding:14px 26px" onclick="iniciarPerguntas()">Começar <span class="arrow">→</span></button>
+    </div>
+  </section>
+
+  <!-- QUESTIONS -->
+  <section class="screen" id="screen-q">
+    <div class="progress"><i id="bar"></i></div>
+    <div class="qcount" id="qcount">Pergunta 1 de 18</div>
+    <div class="qtext" id="qtext">—</div>
+    <div class="scale" id="scale">
+      <button class="opt" onclick="responder(1)"><span class="num">1</span> Discordo totalmente</button>
+      <button class="opt" onclick="responder(2)"><span class="num">2</span> Discordo em parte</button>
+      <button class="opt" onclick="responder(3)"><span class="num">3</span> Neutro / depende</button>
+      <button class="opt" onclick="responder(4)"><span class="num">4</span> Concordo em parte</button>
+      <button class="opt" onclick="responder(5)"><span class="num">5</span> Concordo totalmente</button>
+    </div>
+    <div class="nav"><button class="back" id="backBtn" onclick="voltarPergunta()">← voltar</button><span></span></div>
+  </section>
+
+  <!-- SENDING -->
+  <section class="screen sending" id="screen-sending">
+    <div class="spinner"></div>
+    <p>Registrando suas respostas…</p>
+  </section>
+
+  <!-- DONE -->
+  <section class="screen done" id="screen-done">
+    <div class="check">✓</div>
+    <h2>Tudo certo!</h2>
+    <p id="doneMsg">Obrigado por compartilhar o seu jeito de trabalhar.</p>
+  </section>
+
+  <!-- ERROR -->
+  <section class="screen done" id="screen-error">
+    <div class="check" style="background:#3a1a1a">!</div>
+    <h2>Não consegui enviar</h2>
+    <p class="errmsg" id="errDetail"></p>
+    <button class="retry" onclick="enviar()">Tentar de novo</button>
+  </section>
+
+</div>
+
+<script>
+/* ====== CONFIG ====== */
+const URL_PONTE = "https://script.google.com/macros/s/AKfycbxjiVvgsgiXNFq_AFbE-_9Z_nXIpaOinF_fGhBAYET_Yv3C48FrAUQrduiWLrT-YN1DUQ/exec";
+
+/* ====== ITENS (ordem fixa P1..P18). reverso só importa na planilha, não aqui ====== */
+const ITENS = [
+  {id:"P1",  texto:"Quando uma entrega minha está tecnicamente pronta mas vai gerar atrito para o cliente final, eu não considero o trabalho terminado."},
+  {id:"P2",  texto:"Reparo em detalhes que podem atrapalhar a experiência do cliente, mesmo quando ninguém me cobrou por eles."},
+  {id:"P3",  texto:"Se a minha etapa do processo está correta, o que acontece com o cliente lá na ponta não é o meu foco principal."},
+  {id:"P4",  texto:"Quando me esforço bastante em algo e o resultado não vem, troco de abordagem sem ficar apegado ao trabalho que já fiz."},
+  {id:"P5",  texto:"Considero que um trabalho bem-feito e caprichado já é uma entrega de valor, mesmo que o número que importava não tenha vindo."},
+  {id:"P6",  texto:"Quando uma estratégia não está funcionando, prefiro insistir mais um pouco nela do que admitir que precisa mudar."},
+  {id:"P7",  texto:"Paro minhas próprias entregas para destravar um colega de outra área, mesmo quando estou sob pressão de prazo."},
+  {id:"P8",  texto:"Abro mão do crédito individual quando isso faz o time inteiro entregar melhor."},
+  {id:"P9",  texto:"Quando o problema está claramente no escopo de outra área, minha parte é seguir focado nas minhas entregas."},
+  {id:"P10", texto:"Quando algo dá errado na minha frente, assumo a minha parte antes de mapear o que os outros contribuíram para a falha."},
+  {id:"P11", texto:"Cuido de recursos e decisões da empresa com o mesmo critério que teria se o negócio fosse meu."},
+  {id:"P12", texto:"\u201CIsso não estava no meu escopo\u201D é uma explicação que considero suficiente quando algo sob minha vista dá errado."},
+  {id:"P13", texto:"Quando proponho uma forma nova de fazer algo, me comprometo a participar da implementação e a acompanhar se deu resultado."},
+  {id:"P14", texto:"Mudanças frequentes na forma de trabalhar me incomodam mais do que me motivam."},
+  {id:"P15", texto:"Gosto de propor ideias novas, mas implementar e acompanhar o resultado já é com outra pessoa."},
+  {id:"P16", texto:"Quando os dados contrariam a minha intuição, eu reviso a minha intuição."},
+  {id:"P17", texto:"Quando já tenho uma opinião formada, costumo buscar os dados que a confirmam."},
+  {id:"P18", texto:"Prefiro esperar ter dados completos antes de decidir, mesmo que isso trave o andamento."}
+];
+
+/* ====== ESTADO ====== */
+let origem = null;
+let ordem = [];          // ordem embaralhada de exibição
+let pos = 0;             // posição atual na ordem embaralhada
+const respostas = {};    // { P1:5, P2:3, ... }
+
+/* embaralha mantendo o mapeamento para o id original */
+function embaralhar(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function mostrar(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function escolher(o){
+  origem = o;
+  ordem = embaralhar(ITENS);
+  pos = 0;
+  if(o === "Candidato"){ mostrar('screen-name'); setTimeout(()=>document.getElementById('nome').focus(),300); }
+  else { iniciarPerguntas(); }
+}
+
+function voltarIntro(){ mostrar('screen-intro'); }
+
+function iniciarPerguntas(){
+  mostrar('screen-q');
+  render();
+}
+
+function render(){
+  const item = ordem[pos];
+  document.getElementById('qtext').textContent = item.texto;
+  document.getElementById('qcount').textContent = `Pergunta ${pos+1} de ${ordem.length}`;
+  document.getElementById('bar').style.width = `${(pos/ordem.length)*100}%`;
+  document.getElementById('backBtn').disabled = (pos===0);
+}
+
+function responder(valor){
+  respostas[ordem[pos].id] = valor;
+  if(pos < ordem.length-1){
+    pos++;
+    render();
+  } else {
+    document.getElementById('bar').style.width = '100%';
+    enviar();
+  }
+}
+
+function voltarPergunta(){
+  if(pos>0){ pos--; render(); }
+}
+
+function enviar(){
+  mostrar('screen-sending');
+  const payload = { nome: (origem==="Candidato" ? (document.getElementById('nome').value || "Sem nome") : "Anônimo"), origem: origem };
+  ITENS.forEach(it => payload[it.id] = respostas[it.id]);
+
+  fetch(URL_PONTE, { method:"POST", body: JSON.stringify(payload) })
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.status==="ok") mostrar('screen-done');
+      else { document.getElementById('errDetail').textContent = res.mensagem||"erro desconhecido"; mostrar('screen-error'); }
+    })
+    .catch(err=>{ document.getElementById('errDetail').textContent = String(err); mostrar('screen-error'); });
+}
+</script>
+</body>
+</html>
